@@ -7,11 +7,10 @@ import Aos from "aos";
 import { Message } from "../Message/Message";
 
 
+
 export const SignUp = () => {
 
     const [message, setMessage] = useState(null);
-
-
 
 
     const handleSignUp = async () =>{
