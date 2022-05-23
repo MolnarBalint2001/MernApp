@@ -13,6 +13,10 @@ const UserSchema = mongoose.Schema({
     password:{
         type:"String",
         required:[true, "Please add a password"]
+    },
+    token:{
+        type:"String",
+        required:false
     }
 
 },

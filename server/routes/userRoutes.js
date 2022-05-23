@@ -7,7 +7,9 @@ const router = express.Router();
 const {
     loginUser,
     registerUser,
-    getMe
+    getMe,
+    validateUser
+
 } = require("../controllers/userController");
 
 
@@ -15,6 +17,7 @@ const {
 router.post("/", registerUser);
 router.post("/sign_in", loginUser);
 router.get("/me", getMe)
+router.post("/me", validateUser)
 
 
 

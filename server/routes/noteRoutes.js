@@ -12,9 +12,9 @@ const {
 } = require("../controllers/noteController");
 
 
-router.route("/").get(getNotes).post(createNote);
+router.route("/").post(createNote);
 router.route("/:id").put(updateNote).delete(deleteNote);
-
+router.route("/getNotes").post(getNotes);
 
 
 module.exports = router;

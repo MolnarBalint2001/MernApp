@@ -15,6 +15,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const userExist = await User.findOne({ username });
 
+    
+
     if (userExist) {
         res.json({
             message: "User already exist!"
@@ -29,7 +31,8 @@ const registerUser = asyncHandler(async (req, res) => {
         //Create user
         const user = await User.create({
             username: username,
-            password: hashedPassword
+            password: hashedPassword,
+            token:""
         });
 
 
@@ -73,6 +76,10 @@ const loginUser = asyncHandler(async (req, res) => {
         },
         SECRET_KEY)
 
+        await user.update({
+            token:token
+        });
+
         return res.json({
             user: token
         })
@@ -85,6 +92,35 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
 
+
+});
+
+
+const validateUser = asyncHandler(async(req,res) =>{
+    console.log(req.body)
+    const {token} = req.body;
+    
+    const {username, iat} = jwt.decode(token)
+    
+    
+    const user = await User.findOne({username});
+    
+    if (!user){
+        res.status(403).json({
+            valid:false
+        })
+    }
+
+
+    if(user.token !==token){
+        res.status(403).json({
+            valid:false
+        })
+    }
+
+    res.status(200).json({
+        valid:true
+    });
 
 });
 
@@ -103,5 +139,6 @@ const getMe = asyncHandler(async (req, res) => {
 module.exports = {
     loginUser,
     registerUser,
-    getMe
+    getMe,
+    validateUser
 }

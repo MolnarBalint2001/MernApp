@@ -4,12 +4,26 @@
 
 const Note = require("../model/noteModel");
 const asyncHandler = require("express-async-handler");
+const User = require("../model/userModel");
 
 
 
 const getNotes = asyncHandler(async(req,res)=>{
 
-    const notes = await Note.find();
+    const {username} = req.body;
+
+    if(!username){
+        res.status(400);
+    }
+
+    const user = await User.findOne({username})
+    const id = user._id;
+    console.log(user._id)
+
+
+
+    const notes = await Note.find().where({"user": id});
+    console.log(notes)
 
     if (!notes){
         res.json({
@@ -26,25 +40,45 @@ const getNotes = asyncHandler(async(req,res)=>{
 
 const createNote = asyncHandler(async(req,res)=>{
 
-    const {user, title, description, done} = req.body
+    const {username, title, description, status} = req.body
 
-    if (!user && !title){
+
+    if (!username && !(title)){
         res.json({
             messsage:"Failed to create a note!"
         });
     };
 
-    const newNote = new Note({
-        user:user,
-        title:title,
-        description:description,
-        done:done
-    });
+    try {
 
-    await Note.create(newNote);
-    res.json({
-        message:`New note was created successfully! ${newNote.user} ${newNote.title}`
-    });
+        console.log("Find user!")
+        const user = await User.findOne({username});
+
+        if(!user){
+            res.status(404)
+        }
+
+        console.log("NewNote!")
+        const newNote = new Note({
+            user:user,
+            title:title,
+            description:description,
+            done:status
+        });
+        
+
+        console.log("Create Note!")
+        await Note.create(newNote);
+        res.json({
+            message:`New note was created successfully! ${newNote.user} ${newNote.title}`
+        });
+    } catch (error) {
+        res.status(405).json({
+            message:"Something failed!",
+            error: error
+        })
+    }
+   
 });
 
 
